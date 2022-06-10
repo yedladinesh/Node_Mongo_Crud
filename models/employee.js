@@ -3,11 +3,11 @@ const mongoose = require("mongoose");
 var employeeSchema = new mongoose.Schema({
     first_name: {
         type: String,
-        required :"Required"
+        required : [true, "First name is required" ]
     },
     last_name: {
         type: String,
-        required :"Required"
+        required : [true, "Last name is required"]
     },
     dob:{
         type: String
