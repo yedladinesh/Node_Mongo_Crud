@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const express = require("express");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -53,7 +52,8 @@ exports.list = async (req, res) => {
         });
       } else {
         res.status(200).json({
-          message: "Employees found..",
+          message:
+            resp.length > 0 ? "Employees found.." : "Employees not found..",
           data: resp,
         });
       }
@@ -70,22 +70,55 @@ exports.list = async (req, res) => {
 exports.empDelete = async (req, res) => {
   try {
     var id = req.params.id;
-    employeeModel.deleteOne({_id: id}, function(err, result){
-      if(result.deletedCount === 1){
-        res.status(200).json({
-          message: "Employee deleted successfully..",
-          data: id,
-        });
-      }else{
+    employeeModel
+      .remove({ _id: id })
+      .then((result) => {
+        result.deletedCount > 0
+          ? res.status(200).json({
+              message: "Employee deleted successfully..",
+              data: result,
+            })
+          : res.status(404).json({
+              message: "Error",
+              data: "No data found..",
+            });
+      })
+      .catch((err) => {
         res.status(404).json({
-          message: "No data found...",
+          message: err,
         });
-      }
-    })
+      });
   } catch (error) {
     res.status(500).json({
       message: "error",
-      data: error,
+      error: error,
+    });
+  }
+};
+
+// Edit employee detail
+exports.empUpdate = async (req, res) => {
+  try {
+    var id = req.params.id;
+    employeeModel.updateOne(
+      {_id: id },
+      {
+        $set: {
+          first_name: req.body.first_name,
+          last_name: req.body.last_name,
+          dob: req.body.dob,
+          address: req.body.address,
+        },
+      },
+      {upsert: true},
+      function (err, result) {
+        console.log(result, "result");
+      }
+    );
+  } catch (error) {
+    res.status(500).json({
+      message: "error",
+      error: error.message,
     });
   }
 };

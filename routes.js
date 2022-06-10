@@ -4,4 +4,5 @@ module.exports = (app) => {
   app.get("/employee/list", employee.list);
   app.post("/employee/create", employee.create);
   app.delete("/employee/:id", employee.empDelete);
+  app.put("/employee/:id", employee.empUpdate);
 };
